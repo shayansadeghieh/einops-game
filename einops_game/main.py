@@ -1,6 +1,9 @@
-import torch
 import einops
 import random
+import sys
+import time
+import torch
+
 
 ANSI_COLORS = [
     '\033[91m',  # Bright Red
@@ -21,8 +24,6 @@ BANNER = """
 
 def print_rainbow_banner(speed=0.001):
     """Print the banner with rainbow colors using ANSI escape codes."""
-    import time
-    import sys
     
     lines = BANNER.split('\n')
     for line in lines:
@@ -147,6 +148,7 @@ def play_ball():
             is_correct, message = game.check_answer(challenge, answer)            
             
             if is_correct:
+                print(f"\n{message}")                                
                 score += 1                
                 break
             else:
@@ -159,13 +161,9 @@ def play_ball():
             game.game_over(score, total)        
             break
             
-
 def main():
     print_rainbow_banner()
     play_ball()
-
-
-
 
 if __name__ == "__main__":
     main()
