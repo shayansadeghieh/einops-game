@@ -146,9 +146,21 @@ def play_ball():
 
     game = EinopsChallenge()
     score = 0
-    total = 0    
-    max_questions = 10
+    total = 0        
+
     while True:
+        try:
+            max_questions = int(input("How many questions would you like to answer?: ").strip())
+            if max_questions <= 0:
+                print("Please enter a positive number")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid number")
+            continue
+
+    while True:
+        
         challenge = game.get_challenge()
         total += 1
         
@@ -159,7 +171,7 @@ def play_ball():
         print(f"\nEinops operation:")
         print(f"einops.{challenge['operation']}")
         
-        while True:
+        while True:            
             answer = input("\nYour answer (or 'hint', 'q'): ").strip()
             
             if answer.lower() == 'q':
