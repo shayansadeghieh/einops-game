@@ -11,4 +11,4 @@ Make sure you have `poetry` installed: `pip install poetry`.
 
 Enjoy!
 
-![Demo](assets/demo.gif)
+![Demo](assets/demo_1.5_speed.gif)
