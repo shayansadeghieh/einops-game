@@ -10,3 +10,5 @@ Make sure you have `poetry` installed: `pip install poetry`.
 2. From the root directory, run `make run`
 
 Enjoy!
+
+![Demo](assets/demo.gif)

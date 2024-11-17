@@ -47,33 +47,27 @@ class EinopsChallenge:
         self.challenge_templates = [
             {
                 'generator': lambda: torch.rand((2, 2)).round(decimals=1),  
-                'operation': "rearrange(tensor, 'h w -> w h')",
-                'hint': "Think about swapping height and width dimensions"
+                'operation': "rearrange(tensor, 'h w -> w h')",                
             },
             {
                 'generator': lambda: torch.rand((1, 2, 2)).round(decimals=1),  
-                'operation': "rearrange(tensor, 'b h w -> (b h) w')",
-                'hint': "Combine the first two dimensions into one"
+                'operation': "rearrange(tensor, 'b h w -> (b h) w')",                
             },
             {
                 'generator': lambda: torch.rand((1, 2)).round(decimals=1),  
-                'operation': "repeat(tensor, 'h w -> h w c', c=2)",
-                'hint': "Add a new dimension with 2 copies"
+                'operation': "repeat(tensor, 'h w -> h w c', c=2)",                
             },
             {
                 'generator': lambda: torch.rand((2, 2, 2)).round(decimals=1),  
-                'operation': "reduce(tensor, 'b h w -> b h 1', 'mean')",
-                'hint': "Average the values in the width dimension (w)"
+                'operation': "reduce(tensor, 'b h w -> b h 1', 'mean')",                
             },
             {
                 'generator': lambda: torch.rand((2, 2, 2)).round(decimals=1),  
-                'operation': "reduce(tensor, 'b h w -> b h', 'mean')",
-                'hint': "Average the values in the width dimension (w)"
+                'operation': "reduce(tensor, 'b h w -> b h', 'mean')",                
             },
             {
                 'generator': lambda: torch.rand((2, 2)).round(decimals=1),  
-                'operation': "repeat(tensor, 'h w -> h w c', c=2)",
-                'hint': "Add a new dimension that repeats each element twice"
+                'operation': "repeat(tensor, 'h w -> h w c', c=2)",                
             }
         ]
 
@@ -88,8 +82,7 @@ class EinopsChallenge:
         template = random.choice(self.challenge_templates)
         return {
             'tensor': template['generator'](),  # Generate a new random tensor
-            'operation': template['operation'],
-            'hint': template['hint']
+            'operation': template['operation'],            
         }
     
     def check_answer(self, challenge, user_answer):
@@ -141,7 +134,7 @@ def play_ball():
     print("Try to predict the output of einops operations on PyTorch tensors.")
     print("Enter your answer as a PyTorch tensor (e.g., torch.tensor([[0.1, 0.2], [0.3, 0.4]]))")    
     print(f"{BOLD}FORMATTING MATTERS{RESET}. Make sure your tensors have correct spacing.")
-    print("Type 'hint' for a hint, or 'q' to exit.\n")
+    print("Type 'q' to exit.\n")
     
 
     game = EinopsChallenge()
@@ -172,15 +165,11 @@ def play_ball():
         print(f"einops.{challenge['operation']}")
         
         while True:            
-            answer = input("\nYour answer (or 'hint', 'q'): ").strip()
+            answer = input("\nYour answer (or 'q'): ").strip()
             
             if answer.lower() == 'q':
                 game.game_over(score, total)                
-                return
-            
-            if answer.lower() == 'hint':
-                print(f"\nHint: {challenge['hint']}")
-                continue
+                return            
                 
             is_correct, message = game.check_answer(challenge, answer)            
             
