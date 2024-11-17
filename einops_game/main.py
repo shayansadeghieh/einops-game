@@ -4,6 +4,9 @@ import sys
 import time
 import torch
 
+# So we don't need to type all the digits 
+torch.set_printoptions(precision=1)    
+
 
 ANSI_COLORS = [
     '\033[91m',  # Bright Red
@@ -14,6 +17,7 @@ ANSI_COLORS = [
     '\033[95m',  # Bright Magenta
 ]
 RESET = '\033[0m'
+BOLD = '\033[1m'
 BANNER = """
 #######  ###  ##    ##  #######  ######  #######  ##      #######  ##   ##  ######
 ##       ###  ###   ##  ##   ##  ##  ##  ##   ##  ##      ##   ##  ##   ##  ##
@@ -40,21 +44,36 @@ def print_rainbow_banner(speed=0.001):
 
 class EinopsChallenge:
     def __init__(self):
-        self.challenges = [
+        self.challenge_templates = [
             {
-                'tensor': torch.arange(6).reshape(2, 3),
-                'operation': "rearrange(tensor, 'h w -> w h')",                
+                'generator': lambda: torch.rand((2, 2)).round(decimals=1),  
+                'operation': "rearrange(tensor, 'h w -> w h')",
                 'hint': "Think about swapping height and width dimensions"
             },
             {
-                'tensor': torch.arange(12).reshape(2, 2, 3),
+                'generator': lambda: torch.rand((1, 2, 2)).round(decimals=1),  
                 'operation': "rearrange(tensor, 'b h w -> (b h) w')",
                 'hint': "Combine the first two dimensions into one"
             },
             {
-                'tensor': torch.arange(8).reshape(2, 4),
-                'operation': "repeat(tensor, 'h w -> h w c', c=3)",
-                'hint': "Add a new dimension with 3 copies"
+                'generator': lambda: torch.rand((1, 2)).round(decimals=1),  
+                'operation': "repeat(tensor, 'h w -> h w c', c=2)",
+                'hint': "Add a new dimension with 2 copies"
+            },
+            {
+                'generator': lambda: torch.rand((2, 2, 2)).round(decimals=1),  
+                'operation': "reduce(tensor, 'b h w -> b h 1', 'mean')",
+                'hint': "Average the values in the width dimension (w)"
+            },
+            {
+                'generator': lambda: torch.rand((2, 2, 2)).round(decimals=1),  
+                'operation': "reduce(tensor, 'b h w -> b h', 'mean')",
+                'hint': "Average the values in the width dimension (w)"
+            },
+            {
+                'generator': lambda: torch.rand((2, 2)).round(decimals=1),  
+                'operation': "repeat(tensor, 'h w -> h w c', c=2)",
+                'hint': "Add a new dimension that repeats each element twice"
             }
         ]
 
@@ -65,9 +84,14 @@ class EinopsChallenge:
         return str(tensor)
 
     def get_challenge(self):
-        """Return a random challenge"""
-        return random.choice(self.challenges)
-
+        """Return a random challenge with a freshly generated tensor"""
+        template = random.choice(self.challenge_templates)
+        return {
+            'tensor': template['generator'](),  # Generate a new random tensor
+            'operation': template['operation'],
+            'hint': template['hint']
+        }
+    
     def check_answer(self, challenge, user_answer):
         """Check if user's answer matches the expected output"""
         try:
@@ -115,20 +139,21 @@ class EinopsChallenge:
 def play_ball():
     print("\n🎮 Welcome to Einopolous!")
     print("Try to predict the output of einops operations on PyTorch tensors.")
-    print("Enter your answer as a PyTorch tensor (e.g., 'torch.tensor([[1, 2], [3, 4]])')")
+    print("Enter your answer as a PyTorch tensor (e.g., torch.tensor([[0.1, 0.2], [0.3, 0.4]]))")    
+    print(f"{BOLD}FORMATTING MATTERS{RESET}. Make sure your tensors have correct spacing.")
     print("Type 'hint' for a hint, or 'q' to exit.\n")
     
 
     game = EinopsChallenge()
     score = 0
     total = 0    
-    max_questions = 5
+    max_questions = 10
     while True:
         challenge = game.get_challenge()
         total += 1
         
         print("\n" + "="*50)
-        print(f"Challenge {total}:")        
+        print(f"{BOLD}Challenge {total}:{RESET}")        
         print(f"\nInput tensor:")
         print(game.format_tensor(challenge['tensor']))
         print(f"\nEinops operation:")
@@ -161,7 +186,7 @@ def play_ball():
             game.game_over(score, total)        
             break
             
-def main():
+def main():    
     print_rainbow_banner()
     play_ball()
 
