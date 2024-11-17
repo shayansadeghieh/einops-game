@@ -79,28 +79,43 @@ class EinopsChallenge:
             try:
                 user_tensor = eval(user_answer)
                 if not isinstance(user_tensor, torch.Tensor):
-                    return False, "Your answer should be a PyTorch tensor"
+                    return False, f"Your answer should be a PyTorch tensor. The answer is\n{expected}"
             except:
-                return False, "Invalid tensor format"
+                return False, f"Invalid tensor format. The answer is\n{expected}"
 
             # Check if shapes match
             if user_tensor.shape != expected.shape:
-                return False, f"Shape mismatch! Expected shape {expected.shape}, got {user_tensor.shape}"
+                return False, f"Shape mismatch! Expected shape {expected.shape}, got {user_tensor.shape}. The answer is {expected}"
 
             # Check if values match
             if not torch.allclose(user_tensor, expected, rtol=1e-3):
-                return False, "Values don't match the expected result"
+                return False, f"Values don't match the expected result. The answer is {expected}"
 
             return True, "Correct!"
             
         except Exception as e:
             return False, f"Error evaluating answer: {str(e)}"
+    
+    def game_over(self, score, total):
+        print("\n" + "="*50)
+        print("\n🎮 GAME OVER! 🎮")
+        print(f"\nFinal Score: {score}/{total} ({(score/total)*100:.1f}%)")
+        # Different messages based on performance
+        if score == total:
+            print("\n🏆 Perfect score! You're an Einops Master! 🏆")
+        elif score >= total * 0.8:
+            print("\n🌟 Excellent! You're well on your way to Einops mastery!")
+        elif score >= total * 0.6:
+            print("\n👍 Good job! Keep practicing to improve your Einops skills!")
+        else:
+            print("\n📚 lol, damn.")
+
 
 def play_ball():
     print("\n🎮 Welcome to Einopolous!")
     print("Try to predict the output of einops operations on PyTorch tensors.")
     print("Enter your answer as a PyTorch tensor (e.g., 'torch.tensor([[1, 2], [3, 4]])')")
-    print("Type 'hint' for a hint, or 'quit' to exit.\n")
+    print("Type 'hint' for a hint, or 'q' to exit.\n")
     
 
     game = EinopsChallenge()
@@ -119,10 +134,10 @@ def play_ball():
         print(f"einops.{challenge['operation']}")
         
         while True:
-            answer = input("\nYour answer (or 'hint', 'quit'): ").strip()
+            answer = input("\nYour answer (or 'hint', 'q'): ").strip()
             
-            if answer.lower() == 'quit':
-                print(f"\nGame Over! Final score: {score}/{total}")
+            if answer.lower() == 'q':
+                game.game_over(score, total)                
                 return
             
             if answer.lower() == 'hint':
@@ -141,19 +156,7 @@ def play_ball():
         print(f"\nCurrent score: {score}/{total}")
 
         if total == max_questions:
-            print("\n" + "="*50)
-            print("\n🎮 GAME OVER! 🎮")
-            print(f"\nFinal Score: {score}/{total} ({(score/total)*100:.1f}%)")
-            
-            # Different messages based on performance
-            if score == total:
-                print("\n🏆 Perfect score! You're an Einops Master! 🏆")
-            elif score >= total * 0.8:
-                print("\n🌟 Excellent! You're well on your way to Einops mastery!")
-            elif score >= total * 0.6:
-                print("\n👍 Good job! Keep practicing to improve your Einops skills!")
-            else:
-                print("\n📚 lol, damn.")
+            game.game_over(score, total)        
             break
             
 

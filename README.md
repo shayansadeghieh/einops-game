@@ -1,6 +1,6 @@
 # Einopolous 
 
-Tensor manipulation can be difficult. Einoplous is a game that you can play to get better at it. 
+Tensor manipulation can be difficult. Einopolous is a game that you can play to get better at it. 
 
 # Steps to Play
 
