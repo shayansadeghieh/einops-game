@@ -94,21 +94,23 @@ class EinopsChallenge:
             
             # Convert user's answer to tensor
             # First, evaluate the string as a Python expression
-            try:
-                user_tensor = eval(user_answer)
-                if not isinstance(user_tensor, torch.Tensor):
-                    return False, f"Your answer should be a PyTorch tensor. The answer is\n{expected}"
-            except:
-                return False, f"Invalid tensor format. The answer is\n{expected}"
+            # try:
+            user_tensor = eval(user_answer)
+            print("this is user_tensor", user_tensor)
+            if not isinstance(user_tensor, torch.Tensor):
+                return False, f"Your answer should be a PyTorch tensor. The answer is\n{expected}"
+            # except:
+                # return False, f"Invalid tensor format. The answer is\n{expected}"
 
             # Check if shapes match
             if user_tensor.shape != expected.shape:
                 return False, f"Shape mismatch! Expected shape {expected.shape}, got {user_tensor.shape}. The answer is {expected}"
 
-            # Check if values match
-            if not torch.allclose(user_tensor, expected, rtol=1e-3):
-                return False, f"Values don't match the expected result. The answer is {expected}"
-
+            if not torch.allclose(user_tensor, expected, rtol=1e-3):                
+                expected_str = str(expected.tolist()) 
+                actual_str = str(user_tensor.tolist())
+                return False, f"Values don't match.\nExpected:\n{expected_str}\nGot:\n{actual_str}"
+    
             return True, "Correct!"
             
         except Exception as e:
@@ -133,7 +135,7 @@ def play_ball():
     print("\n🎮 Welcome to Einopolous!")
     print("Try to predict the output of einops operations on PyTorch tensors.")
     print("Enter your answer as a PyTorch tensor (e.g., torch.tensor([[0.1, 0.2], [0.3, 0.4]]))")    
-    print(f"{BOLD}FORMATTING MATTERS{RESET}. Make sure your tensors have correct spacing.")
+    print(f"{BOLD}FORMATTING MATTERS{RESET}: Your answer should all be on one line.")
     print("Type 'q' to exit.\n")
     
 
